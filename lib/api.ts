@@ -51,11 +51,11 @@ class ApiClient {
     return this.request<T>(`${endpoint}${qs ? '?' + qs : ''}`);
   }
 
-  post<T = any>(endpoint: string, body: any): Promise<ApiResponse<T>> {
+  post<T = any>(endpoint: string, body: any = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'POST', body: JSON.stringify(body) });
   }
 
-  put<T = any>(endpoint: string, body: any): Promise<ApiResponse<T>> {
+  put<T = any>(endpoint: string, body: any = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'PUT', body: JSON.stringify(body) });
   }
 

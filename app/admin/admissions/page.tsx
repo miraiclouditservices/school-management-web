@@ -94,7 +94,7 @@ export default function AdmissionsPage() {
   };
 
   const handleConvert = async (id: string) => {
-    await api.post(`/inquiries/${id}/convert`);
+    await api.post(`/inquiries/${id}/convert`, {});
     load(); setSelected(null);
   };
 
