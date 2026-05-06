@@ -75,7 +75,7 @@ export default function AccountsDashboard() {
    useEffect(() => { loadData(); }, [txFilters]);
 
    const filteredStaff = staffList.filter(s => {
-      if (registryFilter === 'Pending') return s.status === 'READY';
+      if (registryFilter === 'Pending') return s.status === 'Pending';
       if (registryFilter === 'Paid') return s.status === 'Paid';
       return true;
    });
