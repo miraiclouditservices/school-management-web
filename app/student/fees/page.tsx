@@ -33,11 +33,11 @@ export default function FeesPage() {
   const installments = fee.installments || [];
 
   const columns = [
-    { header: 'INSTALLMENT', accessor: 'name' },
-    { header: 'AMOUNT', accessor: (row: any) => <span className="fw-800">{formatCurrency(row.amount)}</span> },
-    { header: 'DUE DATE', accessor: (row: any) => formatDate(row.dueDate) },
-    { header: 'STATUS', accessor: (row: any) => <StatusBadge status={row.status} /> },
-    { header: 'PAID ON', accessor: (row: any) => formatDate(row.paidDate) },
+    { key: 'name', label: 'INSTALLMENT' },
+    { key: 'amount', label: 'AMOUNT', render: (row: any) => <span className="fw-800">{formatCurrency(row.amount)}</span> },
+    { key: 'dueDate', label: 'DUE DATE', render: (row: any) => formatDate(row.dueDate) },
+    { key: 'status', label: 'STATUS', render: (row: any) => <StatusBadge status={row.status} /> },
+    { key: 'paidDate', label: 'PAID ON', render: (row: any) => formatDate(row.paidDate) },
   ];
 
   return (

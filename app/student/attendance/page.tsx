@@ -56,9 +56,9 @@ export default function StudentAttendance() {
   };
 
   const columns = [
-    { header: 'DATE', accessor: (row: any) => <span className="fw-900 text-dark small">{formatDate(row.date)}</span> },
-    { header: 'STATUS', accessor: (row: any) => <StatusBadge status={row.status} /> },
-    { header: 'REMARKS', accessor: (row: any) => <span className="text-muted extra-small fw-semibold">{row.remarks || '-'}</span> },
+    { key: 'date', label: 'DATE', render: (row: any) => <span className="fw-900 text-dark small">{formatDate(row.date)}</span> },
+    { key: 'status', label: 'STATUS', render: (row: any) => <StatusBadge status={row.status} /> },
+    { key: 'remarks', label: 'REMARKS', render: (row: any) => <span className="text-muted extra-small fw-semibold">{row.remarks || '-'}</span> },
   ];
 
   const renderCalendar = () => {

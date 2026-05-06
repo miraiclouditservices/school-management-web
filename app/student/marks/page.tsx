@@ -18,12 +18,12 @@ export default function MarksPage() {
   }, []);
 
   const columns = [
-    { header: 'EXAM TYPE', accessor: 'examType' },
-    { header: 'SUBJECT', accessor: 'subject' },
-    { header: 'MARKS OBTAINED', accessor: (row: any) => <span className="fw-800">{row.marks} / {row.maxMarks}</span> },
-    { header: 'PERCENTAGE', accessor: (row: any) => `${((row.marks / row.maxMarks) * 100).toFixed(1)}%` },
-    { header: 'GRADE', accessor: 'grade' },
-    { header: 'REMARKS', accessor: 'remarks' },
+    { key: 'examType', label: 'EXAM TYPE' },
+    { key: 'subject', label: 'SUBJECT' },
+    { key: 'marks', label: 'MARKS OBTAINED', render: (row: any) => <span className="fw-800">{row.marks} / {row.maxMarks}</span> },
+    { key: 'percentage', label: 'PERCENTAGE', render: (row: any) => `${((row.marks / row.maxMarks) * 100).toFixed(1)}%` },
+    { key: 'grade', label: 'GRADE' },
+    { key: 'remarks', label: 'REMARKS' },
   ];
 
   return (
