@@ -288,11 +288,12 @@ export function FilterBar({ children, onReset, onApply }: { children: ReactNode,
   );
 }
 
-export function LoadingSpinner() {
+export function LoadingSpinner({ size, full }: { size?: 'sm' | 'md' | 'lg', full?: boolean }) {
+  const s = size === 'sm' ? '1.5rem' : size === 'lg' ? '4rem' : '3rem';
   return (
-    <div className="text-center py-5">
-      <div className="spinner-grow text-primary" style={{ width: '3rem', height: '3rem' }} />
-      <p className="text-muted mt-3 fw-medium">Preparing your data...</p>
+    <div className={`text-center ${full === false ? '' : 'py-5'}`}>
+      <div className="spinner-grow text-primary" style={{ width: s, height: s }} />
+      {full !== false && <p className="text-muted mt-3 fw-medium">Preparing your data...</p>}
     </div>
   );
 }
