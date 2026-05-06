@@ -64,7 +64,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="col-12">
                       <label className="form-label text-muted small fw-bold">Campus Address</label>
-                      <textarea className="form-control" rows="3" value={school.address} onChange={e => setSchool({...school, address: e.target.value})} required></textarea>
+                      <textarea className="form-control" rows={3} value={school.address} onChange={e => setSchool({...school, address: e.target.value})} required></textarea>
                     </div>
                     <div className="col-md-6">
                       <label className="form-label text-muted small fw-bold">Website</label>
