@@ -19,6 +19,7 @@ interface StaffRecord {
   email: string;
   status: string;
   joiningDate: string;
+  photo?: string;
 }
 
 export default function StaffManagementPage() {
