@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DashboardShell from '../../../../components/DashboardShell';
 import { LoadingSpinner } from '../../../../components/UIComponents';
@@ -14,7 +14,7 @@ interface StudentMarkEntry {
   remarks: string;
 }
 
-export default function MarksEntryPage() {
+function MarksEntryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -86,7 +86,7 @@ export default function MarksEntryPage() {
   };
 
   return (
-    <DashboardShell role="admin" hideSidebar={true} hideTopBar={true}>
+    <>
       {/* IMMERSIVE HEADER */}
       <header className="sticky-top bg-white border-bottom shadow-sm py-2 px-4" style={{ zIndex: 1100 }}>
         <div className="d-flex justify-content-between align-items-center max-w-1400 mx-auto w-100">
@@ -227,6 +227,16 @@ export default function MarksEntryPage() {
         .bg-brand { background: #4f46e5; }
         .text-brand { color: #4f46e5; }
       `}</style>
+    </>
+  );
+}
+
+export default function MarksEntryPage() {
+  return (
+    <DashboardShell role="admin" hideSidebar={true} hideTopBar={true}>
+      <Suspense fallback={<div className="p-5 text-center"><LoadingSpinner /></div>}>
+         <MarksEntryContent />
+      </Suspense>
     </DashboardShell>
   );
 }
