@@ -136,9 +136,10 @@ interface DataTableProps {
   data: any[];
   onRowClick?: (row: any) => void;
   actions?: (row: any) => ReactNode;
+  loading?: boolean;
 }
 
-export function DataTable({ columns, data, onRowClick, actions }: DataTableProps) {
+export function DataTable({ columns, data, onRowClick, actions, loading }: DataTableProps) {
   return (
     <div className="ds-table-wrap">
       <table className="ds-table">
@@ -149,7 +150,9 @@ export function DataTable({ columns, data, onRowClick, actions }: DataTableProps
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
+          {loading ? (
+            <tr><td colSpan={columns.length + (actions ? 1 : 0)} className="text-center py-5"><LoadingSpinner full={false} size="sm" /></td></tr>
+          ) : data.length === 0 ? (
             <tr><td colSpan={columns.length + (actions ? 1 : 0)} className="text-center py-5 text-muted">No records found</td></tr>
           ) : (
             data.map((row, i) => (
