@@ -285,7 +285,7 @@ export default function FeeManagementPage() {
       </FormModal>
 
       {/* STUDENT SELECTION MODAL */}
-      <FormModal show={showStudentSearch} onClose={() => setShowStudentSearch(false)} title="Select Student for Collection">
+      <FormModal show={showStudentSearch} onClose={() => setShowStudentSearch(false)} title="Select Student for Collection" onSubmit={e => e.preventDefault()}>
         <div className="mb-3">
           <label className="info-label">Search Student (Name or Admission No)</label>
           <div className="ds-search-bar shadow-none border bg-light-subtle py-2">
