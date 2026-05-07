@@ -1,4 +1,5 @@
 'use client';
+// Modern Mirai UI - Attendance Shadowing Bug Fix
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DashboardShell from '../../../../components/DashboardShell';
