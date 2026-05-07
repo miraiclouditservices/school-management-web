@@ -115,7 +115,7 @@ function VerifyOtpContent() {
               {otp.map((digit, idx) => (
                 <input
                   key={idx}
-                  ref={el => otpRefs.current[idx] = el}
+                  ref={el => { otpRefs.current[idx] = el; }}
                   type="text"
                   inputMode="numeric"
                   className="mirai-otp-input"
