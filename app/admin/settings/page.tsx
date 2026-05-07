@@ -5,14 +5,21 @@ import { LoadingSpinner } from '../../../components/UIComponents';
 import api from '../../../lib/api';
 
 export default function SettingsPage() {
-  const [school, setSchool] = useState({ name: '', email: '', phone: '', address: '', website: '', tagline: '' });
+  const [school, setSchool] = useState({ 
+    name: '', email: '', phone: '', address: '', website: '', tagline: '', logo: '' 
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState({ type: '', text: '' });
 
   useEffect(() => {
     api.get('/auth/school')
-      .then(res => { setSchool(res.data); setLoading(false); })
+      .then(res => { 
+        if (res.data) {
+          setSchool(prev => ({ ...prev, ...res.data })); 
+        }
+        setLoading(false); 
+      })
       .catch(() => setLoading(false));
   }, []);
 
@@ -22,11 +29,17 @@ export default function SettingsPage() {
     try {
       await api.put('/auth/school', school);
       setMsg({ type: 'success', text: 'School profile updated successfully!' });
-      // Update local storage if name changed
-      const user = JSON.parse(localStorage.getItem('user'));
-      user.schoolName = school.name;
-      localStorage.setItem('user', JSON.stringify(user));
-    } catch (err) {
+      
+      // Update local storage safely if name changed
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        user.schoolName = school.name;
+        localStorage.setItem('user', JSON.stringify(user));
+        // Force a small delay or reload might be needed if other components depend on this, 
+        // but for now, we just update it.
+      }
+    } catch (err: any) {
       setMsg({ type: 'danger', text: err.message });
     } finally { setSaving(false); }
   };
@@ -51,8 +64,9 @@ export default function SettingsPage() {
                 <form onSubmit={handleUpdate}>
                   <div className="row g-3">
                     <div className="col-12">
-                      <label className="form-label text-muted small fw-bold">School Name</label>
-                      <input className="form-control" value={school.name} onChange={e => setSchool({...school, name: e.target.value})} required />
+                      <label className="form-label text-muted small fw-bold">School Name (Registration Identity)</label>
+                      <input className="form-control bg-light" value={school.name} readOnly />
+                      <p className="extra-small text-primary fw-bold mt-1 mb-0"><i className="bi bi-info-circle me-1"/> To modify your registered school identity, please contact system support.</p>
                     </div>
                     <div className="col-md-6">
                       <label className="form-label text-muted small fw-bold">Email Address</label>
@@ -92,10 +106,30 @@ export default function SettingsPage() {
                 <h6 className="mb-0 fw-bold">Institutional Branding</h6>
               </div>
               <div className="card-body text-center p-4">
-                <div className="school-logo-preview mx-auto mb-3">
-                  {school.name?.[0] || 'S'}
+                <div className="school-logo-preview mx-auto mb-3 overflow-hidden">
+                  {school.logo ? (
+                    <img src={school.logo} alt="School Logo" className="w-100 h-100 object-fit-cover" />
+                  ) : (
+                    school.name?.[0] || 'S'
+                  )}
                 </div>
-                <button className="btn btn-light btn-sm fw-bold">Upload New Logo</button>
+                <input type="file" id="logo-upload" className="d-none" accept="image/*" onChange={async (e) => {
+                  if (e.target.files?.[0]) {
+                    try {
+                      setSaving(true);
+                      const res = await api.uploadFile('/upload/image', e.target.files[0]);
+                      if (res.success) {
+                        setSchool({...school, logo: res.data.url});
+                        setMsg({ type: 'success', text: 'Logo uploaded! Click save to finalize.' });
+                      }
+                    } catch (err: any) {
+                      setMsg({ type: 'danger', text: 'Logo upload failed: ' + err.message });
+                    } finally { setSaving(false); }
+                  }
+                }} />
+                <button className="btn btn-light btn-sm fw-bold" onClick={() => document.getElementById('logo-upload')?.click()}>
+                  {saving ? <LoadingSpinner size="sm" /> : 'Upload New Logo'}
+                </button>
                 <p className="text-muted mt-2" style={{ fontSize: '11px' }}>Recommended size: 250x250px (PNG or SVG)</p>
               </div>
             </div>

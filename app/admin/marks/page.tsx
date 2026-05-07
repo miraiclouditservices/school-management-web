@@ -36,6 +36,8 @@ export default function MarksDashboard() {
   const [stats, setStats] = useState<ExamStats[]>([]);
   const [records, setRecords] = useState<ExamRecord[]>([]);
   const [filters, setFilters] = useState({ className: 'Class 10', section: 'A', examName: 'Mid-Term' });
+  const [academicYears, setAcademicYears] = useState<any[]>([]);
+  const [currentAY, setCurrentAY] = useState('');
   const [summary, setSummary] = useState({
      totalExams: 0,
      avgPassRate: 0,
@@ -53,6 +55,15 @@ export default function MarksDashboard() {
      maxMarks: 100,
      examDate: new Date().toISOString().split('T')[0]
   });
+
+  const loadInitialData = async () => {
+    try {
+      const res = await api.get('/academic-years');
+      setAcademicYears(res.data);
+      const active = res.data.find((a: any) => a.isCurrent);
+      if (active) setCurrentAY(active._id);
+    } catch (e) { console.error(e); }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -81,7 +92,8 @@ export default function MarksDashboard() {
     setLoading(false);
   };
 
-  useEffect(() => { loadData(); }, [filters]);
+  useEffect(() => { loadInitialData(); }, []);
+  useEffect(() => { loadData(); }, [filters, currentAY]);
 
   const approveMarks = async (id: string) => {
      try {
@@ -93,11 +105,16 @@ export default function MarksDashboard() {
   const scheduleExam = async (e: React.FormEvent) => {
      e.preventDefault();
      try {
+        if (!currentAY) { alert('Please select an academic year first.'); return; }
         // Just creating the metadata record
-        await api.post('/marks', { ...newExam, marks: [] });
+        await api.post('/marks', { 
+          ...newExam, 
+          academicYear: currentAY,
+          marks: [] 
+        });
         setShowScheduleModal(false);
         loadData();
-     } catch (e) { console.error(e); }
+     } catch (e: any) { alert(e.message); }
   };
 
   return (

@@ -1,5 +1,5 @@
-const API_URL = 'https://school-management-pkej.onrender.com/api';
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// const API_URL = 'https://school-management-pkej.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -25,9 +25,9 @@ class ApiClient {
 
   async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     const token = this.getToken();
-    const headers: Record<string, string> = { 
-      'Content-Type': 'application/json', 
-      ...(options.headers as Record<string, string>) 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>)
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -80,12 +80,30 @@ const api = new ApiClient();
 export default api;
 
 export const login = async (email: string, password: string): Promise<ApiResponse> => {
-  const data = await api.post('/auth/login', { email, password });
+  try {
+    const data = await api.post('/auth/login', { email, password });
+    if (data.success && data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+    return data;
+  } catch (e: any) {
+    // Check if error message indicates verification required
+    throw e;
+  }
+};
+
+export const verifyOTP = async (email: string, otp: string): Promise<ApiResponse> => {
+  const data = await api.post('/auth/verify-otp', { email, otp });
   if (data.success && data.token) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
   }
   return data;
+};
+
+export const resendOTP = async (email: string): Promise<ApiResponse> => {
+  return await api.post('/auth/resend-otp', { email });
 };
 
 export const logout = () => {

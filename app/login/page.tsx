@@ -6,19 +6,19 @@ import Link from 'next/link';
 
 const CONTENT = {
   admin: {
-    title: 'Executive School Management',
-    desc: 'Take full control of your institution with our powerful administrative dashboard. Manage staff, students, and finances in one place.',
-    img: '/admin-bg.png'
+    title: 'Executive Administration',
+    desc: 'Unify your institution with enterprise-grade administrative oversight and financial control.',
+    img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000'
   },
   staff: {
-    title: 'Empowering Educators',
-    desc: 'Simplify your daily tasks. Track attendance, manage assignments, and communicate with students effortlessly.',
-    img: '/staff-bg.png'
+    title: 'Academic Excellence',
+    desc: 'Empowering educators with data-driven tools for curriculum management and student success.',
+    img: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=2000'
   },
   student: {
-    title: 'Your Academic Hub',
-    desc: 'Access your courses, grades, and schedules from anywhere. Stay connected with your teachers and classmates.',
-    img: '/student-bg.png'
+    title: 'Future Readiness',
+    desc: 'Access your global classroom, track your progress, and prepare for a boundaryless future.',
+    img: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=2000'
   }
 };
 
@@ -36,7 +36,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const submit = async (e) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(''); setLoading(true);
     try {
@@ -46,36 +46,28 @@ export default function LoginPage() {
         localStorage.setItem('user', JSON.stringify(res.user));
       }
       router.replace(`/${res.user.role}`);
-    } catch (err) { setError(err.message || 'Invalid credentials'); setLoading(false); }
+    } catch (err: any) { 
+      if (err.message.includes('not verified')) {
+        router.push(`/verify-otp?email=${encodeURIComponent(username)}`);
+      } else {
+        setError(err.message || 'Invalid credentials'); 
+        setLoading(false); 
+      }
+    }
   };
 
   const item = CONTENT[role];
 
   return (
-    <div className="login-page-v2">
-      <div className="login-side-img" style={{ 
-        backgroundImage: `linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url(${item.img})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}>
-        <div className="login-side-content">
-          <div className="mb-3">
-            <span className="badge bg-primary px-3 py-2 rounded-pill small fw-bold">v4.0 Pro Edition</span>
-          </div>
+    <div className="mirai-auth-page">
+      <div className="auth-visual-side" style={{ backgroundImage: `url(${item.img})` }}>
+        <div className="visual-overlay"></div>
+        <div className="visual-content">
+          <div className="brand-badge">Global Portal v4.0</div>
           <h1>{item.title}</h1>
           <p>{item.desc}</p>
-        </div>
-      </div>
-      
-      <div className="login-side-form">
-        <div className="login-form-container">
-          <div className="text-center mb-3">
-            <i className="bi bi-mortarboard-fill text-brand" style={{ fontSize: '2.5rem' }} />
-          </div>
-          <h2 className="text-center">Secure Sign In</h2>
-          <p className="sub text-center">Manage your institution with confidence.</p>
-
-          <div className="role-tabs">
+          
+          <div className="role-switch-pills mt-5">
             {['admin', 'staff', 'student'].map(r => (
               <button key={r} type="button" className={role === r ? 'active' : ''} 
                 onClick={() => { setRole(r); setUsername(PRESETS[r].u); setPassword(PRESETS[r].p); setError(''); }}>
@@ -83,40 +75,97 @@ export default function LoginPage() {
               </button>
             ))}
           </div>
+        </div>
+      </div>
+      
+      <div className="auth-form-side">
+        <div className="form-wrapper">
+          <div className="text-center mb-5">
+            <div className="mirai-logo-container mb-3">
+              <span className="mirai-logo-text">MIRAI</span>
+              <span className="mirai-logo-sub">CLOUD IT SERVICES</span>
+            </div>
+            <h2 className="fw-bold text-dark">Portal Access</h2>
+            <p className="text-muted">Secure institutional sign-in</p>
+          </div>
 
-          {error && <div className="alert alert-danger py-2 small mb-3">{error}</div>}
+          {error && <div className="alert alert-danger-mirai mb-4">{error}</div>}
 
           <form onSubmit={submit}>
-            <div className="mb-3">
-              <label className="form-label">Email Address</label>
-              <input className="form-control" value={username} onChange={e => setUsername(e.target.value)} required disabled={loading} placeholder="admin@school.com" />
-            </div>
-            <div className="mb-3">
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <label className="form-label mb-0">Password</label>
-                <a href="#" className="small text-decoration-none fw-bold text-muted hover-brand">Forgot?</a>
+            <div className="mb-4">
+              <div className="mirai-input-group">
+                <label>Institutional Email</label>
+                <input type="email" value={username} onChange={e => setUsername(e.target.value)} required disabled={loading} placeholder="e.g. admin@school.com" />
               </div>
-              <input type="password" className="form-control" value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} placeholder="••••••••" />
+            </div>
+            <div className="mb-4">
+              <div className="mirai-input-group">
+                <div className="d-flex justify-content-between align-items-center">
+                  <label className="mb-0">Secure Password</label>
+                  <a href="#" className="small text-decoration-none fw-bold text-mirai-blue">Reset?</a>
+                </div>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} placeholder="••••••••" />
+              </div>
             </div>
             
-            <div className="mb-4">
+            <div className="mb-5">
               <div className="form-check">
                 <input className="form-check-input shadow-none" type="checkbox" id="rem" />
-                <label className="form-check-label text-muted small fw-medium" htmlFor="rem">Remember this device</label>
+                <label className="form-check-label text-muted small fw-bold" htmlFor="rem">Remember this session</label>
               </div>
             </div>
 
-            <button type="submit" className="btn btn-brand w-100 py-3 fw-bold rounded-3 shadow-sm" disabled={loading}>
-              {loading ? <span className="spinner-border spinner-border-sm me-2" /> : 'Login to Dashboard'}
+            <button type="submit" className="mirai-btn-primary w-100" disabled={loading}>
+              {loading ? <span className="spinner-border spinner-border-sm me-2" /> : `Access ${role.charAt(0).toUpperCase() + role.slice(1)} Dashboard`}
             </button>
 
-            <div className="text-center mt-4">
-              <span className="text-muted small fw-medium">New to School ERP? </span>
-              <Link href="/register-school" className="small text-brand fw-bold text-decoration-none hover-underline">Register School</Link>
+            <div className="text-center mt-5">
+              <span className="text-muted small fw-medium">Partner with us? </span>
+              <Link href="/register-school" className="small text-mirai-blue fw-bold text-decoration-none">Enroll Institution</Link>
             </div>
           </form>
         </div>
       </div>
+
+      <style jsx>{`
+        .mirai-auth-page { display: flex; min-height: 100vh; font-family: 'Inter', sans-serif; background: #ffffff; }
+        
+        .auth-visual-side { flex: 1; position: relative; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; padding: 60px; color: white; transition: all 0.6s ease; }
+        .visual-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0, 82, 204, 0.95) 0%, rgba(0, 61, 153, 0.8) 100%); }
+        .visual-content { position: relative; z-index: 10; max-width: 500px; }
+        .brand-badge { display: inline-block; padding: 6px 16px; background: rgba(255, 255, 255, 0.15); border-radius: 100px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255, 255, 255, 0.3); margin-bottom: 30px; letter-spacing: 1px; }
+        .visual-content h1 { font-size: 48px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+        .visual-content p { font-size: 18px; opacity: 0.85; line-height: 1.6; font-weight: 400; }
+        
+        .role-switch-pills { display: flex; gap: 10px; background: rgba(255, 255, 255, 0.1); padding: 6px; border-radius: 100px; width: fit-content; }
+        .role-switch-pills button { background: transparent; border: none; padding: 8px 20px; border-radius: 100px; color: white; font-size: 13px; font-weight: 700; transition: all 0.3s; }
+        .role-switch-pills button.active { background: white; color: #0052CC; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+
+        .auth-form-side { width: 600px; display: flex; align-items: center; justify-content: center; padding: 60px; background: white; }
+        .form-wrapper { width: 100%; max-width: 400px; }
+        
+        .mirai-logo-container { display: flex; flex-direction: column; align-items: center; }
+        .mirai-logo-text { font-size: 28px; font-weight: 900; color: #0052CC; letter-spacing: -0.5px; }
+        .mirai-logo-sub { font-size: 9px; font-weight: 800; color: #64748b; letter-spacing: 2px; margin-top: -5px; }
+
+        .mirai-input-group { display: flex; flex-direction: column; gap: 8px; }
+        .mirai-input-group label { font-size: 13px; font-weight: 700; color: #475569; }
+        .mirai-input-group input { padding: 14px 18px; border-radius: 14px; border: 2px solid #f1f5f9; background: #f8fafc; font-size: 15px; transition: all 0.2s; outline: none; }
+        .mirai-input-group input:focus { border-color: #0052CC; background: white; box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1); }
+        
+        .mirai-btn-primary { background: #0052CC; color: white; border: none; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 16px; transition: all 0.3s; box-shadow: 0 10px 15px -3px rgba(0, 82, 204, 0.3); }
+        .mirai-btn-primary:hover { background: #0041a3; transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0, 82, 204, 0.4); }
+        .mirai-btn-primary:active { transform: translateY(0); }
+        .mirai-btn-primary:disabled { background: #94a3b8; transform: none; box-shadow: none; cursor: not-allowed; }
+
+        .alert-danger-mirai { background: #fef2f2; color: #991b1b; padding: 12px 16px; border-radius: 12px; border: 1px solid #fee2e2; font-size: 14px; font-weight: 600; text-align: center; }
+        .text-mirai-blue { color: #0052CC; }
+
+        @media (max-width: 1100px) {
+          .auth-visual-side { display: none; }
+          .auth-form-side { width: 100%; }
+        }
+      `}</style>
     </div>
   );
 }

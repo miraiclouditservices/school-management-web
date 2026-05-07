@@ -47,8 +47,19 @@ export default function FeeManagementPage() {
   const [summary, setSummary] = useState({ totalRevenue: 0, totalCollected: 0, totalBalance: 0, defaultersCount: 0 });
   
   const [showPayModal, setShowPayModal] = useState(false);
+  const [showStudentSearch, setShowStudentSearch] = useState(false);
+  const [students, setStudents] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [payForm, setPayForm] = useState({ amount: '', mode: 'Cash', date: new Date().toISOString().split('T')[0] });
   const [processing, setProcessing] = useState(false);
+
+  const fetchStudents = async (query: string) => {
+    if (query.length < 2) return;
+    try {
+      const res = await api.get('/students', { search: query, limit: 5 });
+      setStudents(res.data || []);
+    } catch (e) { console.error(e); }
+  };
 
   useEffect(() => {
     const loadAY = async () => {
@@ -111,7 +122,7 @@ export default function FeeManagementPage() {
         </div>
         <div className="d-flex gap-2">
           <button className="btn btn-white btn-sm px-3 rounded-pill premium-shadow border-0 extra-small fw-bold text-primary"><i className="bi bi-file-earmark-pdf me-1"/>Export Defaulters</button>
-          <button className="btn btn-primary btn-sm px-4 rounded-pill premium-shadow border-0 extra-small fw-800"><i className="bi bi-plus-lg me-1"/>New Collection</button>
+          <button className="btn btn-primary btn-sm px-4 rounded-pill premium-shadow border-0 extra-small fw-800" onClick={() => setShowStudentSearch(true)}><i className="bi bi-plus-lg me-1"/>New Collection</button>
         </div>
       </div>
 
@@ -270,6 +281,47 @@ export default function FeeManagementPage() {
         <div className="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
            <button type="button" className="btn btn-light btn-sm rounded-pill px-4 fw-bold extra-small" onClick={() => setShowPayModal(false)}>Cancel</button>
            <button type="submit" className="btn btn-primary btn-sm rounded-pill px-4 fw-800 extra-small shadow-sm">Authorize Payment</button>
+        </div>
+      </FormModal>
+
+      {/* STUDENT SELECTION MODAL */}
+      <FormModal show={showStudentSearch} onClose={() => setShowStudentSearch(false)} title="Select Student for Collection">
+        <div className="mb-3">
+          <label className="info-label">Search Student (Name or Admission No)</label>
+          <div className="ds-search-bar shadow-none border bg-light-subtle py-2">
+            <i className="bi bi-search text-muted small"/>
+            <input 
+              className="extra-small" 
+              placeholder="Start typing student name..." 
+              value={searchQuery} 
+              onChange={e => { setSearchQuery(e.target.value); fetchStudents(e.target.value); }} 
+            />
+          </div>
+        </div>
+        <div className="d-flex flex-column gap-2 mt-3" style={{maxHeight: '300px', overflowY: 'auto'}}>
+          {students.map(s => (
+            <button 
+              key={s._id} 
+              className="btn btn-light text-start p-3 rounded-4 border-0 bg-light-subtle d-flex justify-content-between align-items-center"
+              onClick={async () => {
+                const feeRes = await api.get('/fees', { student: s._id });
+                if (feeRes.data && feeRes.data.length > 0) {
+                  setSelectedFee(feeRes.data[0]);
+                  setShowStudentSearch(false);
+                  setShowPayModal(true);
+                } else {
+                  alert('No fee record found for this student. Please create one in Student profile.');
+                }
+              }}
+            >
+              <div>
+                <div className="fw-800 text-dark extra-small">{s.firstName} {s.lastName}</div>
+                <div className="text-muted extra-small fw-bold">ID: {s.admissionNo} • Class {s.currentClass}</div>
+              </div>
+              <i className="bi bi-chevron-right text-primary"/>
+            </button>
+          ))}
+          {searchQuery.length >= 2 && students.length === 0 && <div className="text-center py-4 text-muted extra-small">No students found.</div>}
         </div>
       </FormModal>
 
