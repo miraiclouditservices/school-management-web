@@ -211,7 +211,7 @@ function MarkAttendanceContent() {
                                 className="form-control form-control-sm border-0 bg-light extra-small" 
                                 placeholder="Note..." 
                                 value={remarks[e._id] || ''} 
-                                onChange={e => setRemarks(prev => ({ ...prev, [e._id]: e.target.value }))}
+                                onChange={ev => setRemarks(prev => ({ ...prev, [e._id]: ev.target.value }))}
                              />
                           </td>
                        </tr>
