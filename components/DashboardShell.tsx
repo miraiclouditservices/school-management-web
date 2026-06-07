@@ -48,7 +48,7 @@ export default function DashboardShell({ children, role, hideSidebar, hideTopBar
             {menu.map(m => (
               <Link key={m.href} href={m.href} className={`ds-nav-item ${pathname === m.href ? 'active' : ''}`}>
                 <div className="ds-nav-icon" style={{ color: pathname === m.href ? '#fff' : m.color }}>
-                  <i className={`bi ${m.icon}`} />
+                  <i className={`hgi-stroke ${m.icon}`} />
                 </div>
                 <span className="nav-label">{m.label}</span>
               </Link>
@@ -62,11 +62,11 @@ export default function DashboardShell({ children, role, hideSidebar, hideTopBar
       {/* Main Page Area */}
       <div className="ds-main">
         {!hideTopBar && (
-          <header className="ds-header shadow-sm">
+          <header className="ds-header">
             <div className="header-left">
-              <div className="menu-toggle d-lg-none me-3"><i className="bi bi-list fs-4" /></div>
+              <div className="menu-toggle d-lg-none me-3"><i className="hgi-stroke hgi-menu-01 fs-4" /></div>
               <div className="ds-search-bar">
-                <i className="bi bi-search text-muted" />
+                <i className="hgi-stroke hgi-search-01 text-muted" />
                 <input type="text" placeholder="Search students, classes, timetable..." />
                 <span className="ds-search-shortcut">⌘K</span>
               </div>
@@ -84,10 +84,10 @@ export default function DashboardShell({ children, role, hideSidebar, hideTopBar
                     {user?.name?.[0] || 'U'}
                   </div>
                 </div>
-                <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                  <li><Link className="dropdown-item py-2" href={`/${role}/settings`}><i className="bi bi-gear me-2" />Settings</Link></li>
+                <ul className="dropdown-menu dropdown-menu-end border mt-2">
+                  <li><Link className="dropdown-item py-2" href={`/${role}/settings`}><i className="hgi-stroke hgi-settings-01 me-2" />Settings</Link></li>
                   <li><hr className="dropdown-divider" /></li>
-                  <li><button className="dropdown-item py-2 text-danger" onClick={logout}><i className="bi bi-box-arrow-right me-2" />Logout Account</button></li>
+                  <li><button className="dropdown-item py-2 text-danger" onClick={logout}><i className="hgi-stroke hgi-logout-01 me-2" />Logout Account</button></li>
                 </ul>
               </div>
             </div>
